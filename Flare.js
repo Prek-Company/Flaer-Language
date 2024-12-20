@@ -31,6 +31,32 @@
                 else document.body.appendChild(button);
                 if (onClick) button.onclick = onClick;
                 return button;
+            },
+
+            // Создание кастомного поля ввода
+            CreateInput: function(placeholder, onSubmit, id, classes, parent) {
+                let napishat = document.createElement('napishat');
+                let input = document.createElement('input');
+                input.type = 'text';
+                input.placeholder = placeholder;
+
+                napishat.appendChild(input);
+                if (id) napishat.id = id;
+                if (classes) napishat.className = classes;
+                if (parent) parent.appendChild(napishat);
+
+                // Обработчик для ввода текста
+                input.addEventListener('blur', function() {
+                    let enteredText = input.value;
+                    onSubmit(enteredText);
+                    napishat.remove();  // Убираем поле ввода после завершения
+                });
+
+                napishat.addEventListener('click', function() {
+                    input.focus();  // Сразу фокусируемся на поле ввода при клике
+                });
+
+                return napishat;
             }
         }
     };
@@ -52,10 +78,11 @@
     window.stopInterval = flare.StopInterval;
     window.dom = flare.Dom;
 
-    // Добавляем функцию knopka
-    window.knopka = function(content) {
-        return flare.Dom.CreateButton(content, function() {
-            flare.Print(`Кнопка с текстом "${content}" была нажата!`);
+    // Добавляем функцию napishat
+    window.napishat = function(placeholder, onSubmit) {
+        return flare.Dom.CreateInput(placeholder, function(enteredText) {
+            flare.Print(`Введённый текст: "${enteredText}"`);
+            if (onSubmit) onSubmit(enteredText);
         });
     };
 })();
