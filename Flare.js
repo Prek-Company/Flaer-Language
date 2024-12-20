@@ -1,7 +1,5 @@
 (function() {
     window.flare = {
-        // Ваши предыдущие методы ...
-
         // Манипуляции с DOM
         Dom: {
             CreateElement: function(tag, content, id, classes, parent) {
@@ -33,9 +31,9 @@
                 return button;
             },
 
-            // Создание кастомного поля ввода
+            // Создание поля ввода
             CreateInput: function(placeholder, onSubmit, id, classes, parent) {
-                let napishat = document.createElement('napishat');
+                let napishat = document.createElement('div');
                 let input = document.createElement('input');
                 input.type = 'text';
                 input.placeholder = placeholder;
@@ -57,11 +55,76 @@
                 });
 
                 return napishat;
+            },
+
+            // Создание выбора файла
+            CreateFileInput: function(onChange, id, classes, parent) {
+                let vibrat = document.createElement('div');
+                let input = document.createElement('input');
+                input.type = 'file';
+
+                vibrat.appendChild(input);
+                if (id) vibrat.id = id;
+                if (classes) vibrat.className = classes;
+                if (parent) parent.appendChild(vibrat);
+
+                input.addEventListener('change', function() {
+                    let file = input.files[0];
+                    if (onChange) onChange(file);
+                });
+
+                return vibrat;
+            },
+
+            // Создание чекбоксов
+            CreateCheckboxes: function(count, onChange, id, classes, parent) {
+                let chek = document.createElement('div');
+
+                for (let i = 0; i < count; i++) {
+                    let checkboxWrapper = document.createElement('div');
+                    let input = document.createElement('input');
+                    input.type = 'checkbox';
+                    input.id = `${id}_checkbox_${i}`;
+
+                    input.addEventListener('change', function() {
+                        if (onChange) onChange(input.checked, i);
+                    });
+
+                    checkboxWrapper.appendChild(input);
+                    chek.appendChild(checkboxWrapper);
+                }
+
+                if (id) chek.id = id;
+                if (classes) chek.className = classes;
+                if (parent) parent.appendChild(chek);
+
+                return chek;
+            },
+
+            // Создание числового ввода
+            CreateNumberInput: function(min, max, onChange, id, classes, parent) {
+                let vibrat = document.createElement('div');
+                let input = document.createElement('input');
+                input.type = 'number';
+                input.min = min;
+                input.max = max;
+
+                vibrat.appendChild(input);
+                if (id) vibrat.id = id;
+                if (classes) vibrat.className = classes;
+                if (parent) parent.appendChild(vibrat);
+
+                input.addEventListener('change', function() {
+                    let value = input.value;
+                    if (onChange) onChange(value);
+                });
+
+                return vibrat;
             }
         }
     };
 
-    // Переопределим команды, чтобы использовать русские имена
+    // Переопределим команды для использования русских имён
     window.pechat = flare.Print;
     window.pish = flare.Input;
     window.peremennye = flare.letVar;
@@ -78,11 +141,16 @@
     window.stopInterval = flare.StopInterval;
     window.dom = flare.Dom;
 
-    // Добавляем функцию napishat
-    window.napishat = function(placeholder, onSubmit) {
-        return flare.Dom.CreateInput(placeholder, function(enteredText) {
-            flare.Print(`Введённый текст: "${enteredText}"`);
-            if (onSubmit) onSubmit(enteredText);
-        });
+    // Добавляем команды для новых элементов
+    window.vibrat = function(type, onSubmit) {
+        if (type === 'file') {
+            return flare.Dom.CreateFileInput(onSubmit);
+        }
+        if (type === 'chislo') {
+            return flare.Dom.CreateNumberInput(0, 100, onSubmit);  // Пример с диапазоном от 0 до 100
+        }
+        if (type === 'Chek') {
+            return flare.Dom.CreateCheckboxes(2, onSubmit); // Пример с 2 чекбоксами
+        }
     };
 })();
